@@ -11,7 +11,7 @@ module Xor
     def break_single_byte_xor(cipherbytes)
       keys = (0..255)
       winning_plaintext = nil
-      lowest_score = 100000
+      lowest_score = Float::INFINITY
 
       keys.each do |key|
         plainbytes = self.single_byte_xor(cipherbytes, key)

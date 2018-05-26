@@ -19,10 +19,15 @@ module EnglishJudge
 
     def score_plaintext(plaintext)
       diff = 0
+      letter_count = plaintext.scan(/\w/).count
+      if letter_count == 0
+        return Float::INFINITY
+      end
 
       @@frequencies.each do |letter, frequency|
         matches = plaintext.scan(/#{letter}/i).count
-        freq_diff = (frequency - (matches / plaintext.length.to_f)).abs
+        expected = letter_count * (frequency / 100)
+        freq_diff = (expected - matches).abs
         chi2 = freq_diff ** 2 / frequency
         diff += chi2
       end
