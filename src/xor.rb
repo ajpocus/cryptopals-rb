@@ -16,10 +16,13 @@ module Xor
       keys.each do |key|
         plainbytes = self.single_byte_xor(cipherbytes, key)
         plaintext = Bases.bytes_to_ascii(plainbytes)
+        puts plaintext
         score = EnglishJudge.score_plaintext(plaintext)
+        puts score
 
         if score < lowest_score
           winning_plaintext = plaintext
+          lowest_score = score
         end
       end
 

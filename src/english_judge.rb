@@ -1,42 +1,30 @@
+require 'pry'
+
 module EnglishJudge
   class << self
-    @@frequencies = [
-      8.167,
-      1.492,
-      2.782,
-      4.253,
-      12.702,
-      2.228,
-      2.015,
-      6.094,
-      6.966,
-      0.153,
-      0.772,
-      4.025,
-      2.406,
-      6.749,
-      7.507,
-      1.929,
-      0.095,
-      5.987,
-      6.327,
-      9.056,
-      2.758,
-      0.978,
-      2.36,
-      0.15,
-      1.974,
-      0.074
-    ]
+    @@frequencies = {
+      a: 8.167,
+      d: 4.253,
+      e: 12.702,
+      h: 6.094,
+      i: 6.966,
+      l: 4.025,
+      n: 6.749,
+      o: 7.507,
+      r: 5.987,
+      s: 6.327,
+      t: 9.056,
+      u: 2.758
+    }
 
     def score_plaintext(plaintext)
       diff = 0
 
-      @@frequencies.each_with_index do |frequency, index|
-        letter = (97 + index).chr
+      @@frequencies.each do |letter, frequency|
         matches = plaintext.scan(/#{letter}/i).count
-        freq_diff = (frequency - matches / plaintext.length).abs
-        diff += freq_diff
+        freq_diff = (frequency - (matches / plaintext.length.to_f)).abs
+        chi2 = freq_diff ** 2 / frequency
+        diff += chi2
       end
 
       diff
