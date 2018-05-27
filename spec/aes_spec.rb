@@ -1,3 +1,4 @@
+require 'pp'
 require_relative '../src/aes'
 require_relative '../src/bases'
 
@@ -7,5 +8,9 @@ RSpec.describe AES do
     ciphertext = Bases.base64_to_ascii(File.read(path))
     plaintext = AES.decrypt_ecb(ciphertext, 'YELLOW SUBMARINE')
     puts plaintext
+  end
+
+  it 'detects ECB mode' do
+    pp AES.detect_ecb
   end
 end
