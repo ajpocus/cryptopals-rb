@@ -11,18 +11,17 @@ module Xor
     def break_single_byte_xor(cipherbytes)
       keys = (0..255)
       winning_plaintext = nil
-      lowest_score = Float::INFINITY
+      highest_score = 0
+      english_judge = EnglishJudge.new
 
       keys.each do |key|
         plainbytes = self.single_byte_xor(cipherbytes, key)
         plaintext = Bases.bytes_to_ascii(plainbytes)
-        puts plaintext
-        score = EnglishJudge.score_plaintext(plaintext)
-        puts score
+        score = english_judge.score_plaintext(plaintext)
 
-        if score < lowest_score
+        if score > highest_score
           winning_plaintext = plaintext
-          lowest_score = score
+          highest_score = score
         end
       end
 
