@@ -18,4 +18,8 @@ RSpec.describe Xor do
     cipherbytes = Bases.hex_to_bytes(cipherhex)
     puts Xor.break_single_byte_xor(cipherbytes)
   end
+
+  it 'detects single-byte xor' do
+    puts Xor.detect_single_byte_xor
+  end
 end

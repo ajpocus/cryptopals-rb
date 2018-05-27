@@ -3,7 +3,7 @@ require 'pry'
 class EnglishJudge
   def initialize
     @frequencies = {}
-    path = File.join(File.dirname(__FILE__), '../data/english_bigrams_1.txt')
+    path = File.join(File.dirname(__FILE__), '..', 'data', 'english_bigrams_1.txt')
     File.foreach(path) do |line|
       bigram, count = line.split(' ')
       @frequencies[bigram] = Math.log(count.to_i) ** 2
