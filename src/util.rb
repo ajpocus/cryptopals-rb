@@ -18,5 +18,11 @@ module Util
 
       blocks
     end
+
+    def pkcs7_padding(str, len)
+      pad_len = len - str.length
+      str << ("\\x%02d" % pad_len) * pad_len
+      str
+    end
   end
 end
