@@ -24,4 +24,15 @@ class EnglishJudge
 
     score
   end
+
+  def hamming_distance(s1, s2)
+    bytes1 = Bases.ascii_to_bytes(s1)
+    bytes2 = Bases.ascii_to_bytes(s2)
+
+    byte_pairs = bytes1.zip(bytes2)
+
+    byte_pairs.map { |b1, b2|
+      (b1 ^ b2).to_s(2).count('1')
+    }.reduce(&:+)
+  end
 end

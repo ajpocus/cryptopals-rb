@@ -22,4 +22,15 @@ RSpec.describe Xor do
   it 'detects single-byte xor' do
     puts Xor.detect_single_byte_xor
   end
+
+  it 'performs repeating-key xor' do
+    sample_plaintext = """Burning 'em, if you ain't quick and nimble
+I go crazy when I hear a cymbal"""
+    sample_cipherhex = '0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f'
+    key = 'ICE'
+    plainbytes = Bases.ascii_to_bytes(sample_plaintext)
+    cipherbytes = Bases.hex_to_bytes(sample_cipherhex)
+
+    expect(Xor.repeating_key_xor(plainbytes, key)).to eq(cipherbytes)
+  end
 end

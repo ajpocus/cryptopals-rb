@@ -2,6 +2,10 @@ require 'base64'
 
 module Bases
   class << self
+    def ascii_to_bytes(ascii)
+      ascii.bytes
+    end
+    
     def base64_to_ascii(base64)
       Base64.decode64(base64)
     end

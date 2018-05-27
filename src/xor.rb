@@ -53,5 +53,11 @@ module Xor
       keybytes = Array.new(plainbytes.length, key)
       self.fixed_xor(plainbytes, keybytes)
     end
+
+    def repeating_key_xor(plainbytes, key)
+      key = (key * (plainbytes.length / key.length + 1)).slice(0, plainbytes.length)
+      keybytes = Bases.ascii_to_bytes(key)
+      self.fixed_xor(plainbytes, keybytes)
+    end
   end
 end
