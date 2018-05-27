@@ -56,7 +56,8 @@ module Xor
       self.fixed_xor(plainbytes, keybytes)
     end
 
-    def repeating_key_xor(plainbytes, key)
+    def repeating_key_xor(plainbytes, keybytes)
+      key = Bases.bytes_to_ascii(keybytes)
       key = (key * (plainbytes.length / key.length + 1)).slice(0, plainbytes.length)
       keybytes = Bases.ascii_to_bytes(key)
       self.fixed_xor(plainbytes, keybytes)
@@ -85,6 +86,13 @@ module Xor
       potential_plaintexts = []
       potential_keysizes.each do |keysize|
         blocks = Util.partition(cipherbytes, keysize)
+        if blocks.last.length != keysize
+          block = blocks.last
+          while block.length < keysize
+            block << 0
+          end
+        end
+
         transposed_blocks = blocks.transpose
         key_bytes = []
 
@@ -93,7 +101,9 @@ module Xor
           key_bytes << key
         end
 
-        potential_plaintexts << Bases.bytes_to_ascii(self.fixed_xor(cipherbytes, key_bytes))
+        puts cipherbytes
+        puts key_bytes
+        potential_plaintexts << Bases.bytes_to_ascii(self.repeating_key_xor(cipherbytes, key_bytes))
       end
 
       puts potential_plaintexts

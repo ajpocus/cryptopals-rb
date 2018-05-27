@@ -31,8 +31,9 @@ I go crazy when I hear a cymbal"""
     key = 'ICE'
     plainbytes = Bases.ascii_to_bytes(sample_plaintext)
     cipherbytes = Bases.hex_to_bytes(sample_cipherhex)
+    keybytes = Bases.ascii_to_bytes(key)
 
-    expect(Xor.repeating_key_xor(plainbytes, key)).to eq(cipherbytes)
+    expect(Xor.repeating_key_xor(plainbytes, keybytes)).to eq(cipherbytes)
   end
 
   it 'breaks repeating-key xor' do
