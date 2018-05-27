@@ -39,7 +39,7 @@ module Xor
       path = File.join(File.dirname(__FILE__), '..', 'data', 'challenge_4.txt')
       File.foreach(path) do |cipherhex|
         cipherbytes = Bases.hex_to_bytes(cipherhex)
-        plaintext = break_single_byte_xor(cipherbytes)
+        plaintext, key = break_single_byte_xor(cipherbytes)
         score = english_judge.score_plaintext(plaintext)
 
         if score > highest_score
@@ -105,7 +105,7 @@ module Xor
         end
       end
 
-      puts winning_plaintext
+      winning_plaintext
     end
   end
 end

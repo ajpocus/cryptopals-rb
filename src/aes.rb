@@ -13,4 +13,8 @@ module AES
       decrypted
     end
   end
+
+  def detect_ecb
+    
+  end
 end
