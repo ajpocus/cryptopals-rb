@@ -72,13 +72,14 @@ module Xor
 
       distances = {}
       keysizes.each do |keysize|
-        block1 = cipherbytes.slice(0, keysize)
-        block2 = cipherbytes.slice(keysize, keysize)
-        distance = english_judge.hamming_distance(block1, block2)
-        distances[keysize] = distance / keysize.to_f
+        4.times.each do |i|
+          block1 = cipherbytes.slice(i*keysize, keysize)
+          block2 = cipherbytes.slice(i*keysize+keysize, keysize)
+          distances[keysize] ||= 0
+          distances[keysize] += english_judge.hamming_distance(block1, block2) / keysize
+        end
       end
-      puts distances
-      
+
       potential_keysizes = distances.sort_by { |k, v| v }.take(4).map(&:first)
       potential_plaintexts = []
       potential_keysizes.each do |keysize|
