@@ -74,24 +74,15 @@ module Xor
       keysizes.each do |keysize|
         block1 = cipherbytes.slice(0, keysize)
         block2 = cipherbytes.slice(keysize, keysize)
-        s1 = Bases.bytes_to_ascii(block1)
-        s2 = Bases.bytes_to_ascii(block2)
-        distance = english_judge.hamming_distance(s1, s2)
+        distance = english_judge.hamming_distance(block1, block2)
         distances[keysize] = distance / keysize.to_f
       end
-
-      potential_keysizes = distances.sort_by { |k, v| v }.take(5).map(&:first)
-      puts potential_keysizes
+      puts distances
+      
+      potential_keysizes = distances.sort_by { |k, v| v }.take(4).map(&:first)
       potential_plaintexts = []
       potential_keysizes.each do |keysize|
         blocks = Util.partition(cipherbytes, keysize)
-        if blocks.last.length != keysize
-          block = blocks.last
-          while block.length < keysize
-            block << 0
-          end
-        end
-
         transposed_blocks = blocks.transpose
         key_bytes = []
 

@@ -1,15 +1,22 @@
 module Util
   class << self
     def partition(arr, len)
-      parts = []
+      blocks = []
       start = 0
       idx = len
       while start < arr.length
-        parts << arr.slice(start, len)
+        blocks << arr.slice(start, len)
         start += len
       end
 
-      parts
+      if blocks.last.length != len
+        block = blocks.last
+        while block.length < len
+          block << 0
+        end
+      end
+
+      blocks
     end
   end
 end
