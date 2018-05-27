@@ -16,7 +16,8 @@ RSpec.describe Xor do
   it 'breaks single-byte xor' do
     cipherhex = '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
     cipherbytes = Bases.hex_to_bytes(cipherhex)
-    puts Xor.break_single_byte_xor(cipherbytes)
+    plaintext, key = Xor.break_single_byte_xor(cipherbytes)
+    puts plaintext
   end
 
   it 'detects single-byte xor' do

@@ -11,6 +11,7 @@ module Xor
     def break_single_byte_xor(cipherbytes)
       keys = (0..255)
       winning_plaintext = nil
+      winning_key = nil
       highest_score = 0
       english_judge = EnglishJudge.new
 
@@ -22,10 +23,11 @@ module Xor
         if score > highest_score
           winning_plaintext = plaintext
           highest_score = score
+          winning_key = key
         end
       end
 
-      winning_plaintext
+      [winning_plaintext, winning_key]
     end
 
     def detect_single_byte_xor
@@ -79,10 +81,22 @@ module Xor
 
       puts distances
 
-      potential_keysizes = distances.sort_by { |k, v| v }.take(4)
+      potential_keysizes = distances.sort_by { |k, v| v }.take(4).map(&:first)
+      potential_plaintexts = []
       potential_keysizes.each do |keysize|
         blocks = Util.partition(cipherbytes, keysize)
+        transposed_blocks = blocks.transpose
+        key_bytes = []
+
+        transposed_blocks.each do |block|
+          plaintext, key = self.break_single_byte_xor(block)
+          key_bytes << key
+        end
+
+        potential_plaintexts << Bases.bytes_to_ascii(self.fixed_xor(cipherbytes, key_bytes))
       end
+
+      puts potential_plaintexts
     end
   end
 end
