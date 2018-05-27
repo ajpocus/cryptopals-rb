@@ -33,4 +33,8 @@ I go crazy when I hear a cymbal"""
 
     expect(Xor.repeating_key_xor(plainbytes, key)).to eq(cipherbytes)
   end
+
+  it 'breaks repeating-key xor' do
+    puts Xor.break_repeating_key_xor
+  end
 end

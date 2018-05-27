@@ -59,5 +59,30 @@ module Xor
       keybytes = Bases.ascii_to_bytes(key)
       self.fixed_xor(plainbytes, keybytes)
     end
+
+    def break_repeating_key_xor
+      path = File.join(File.dirname(__FILE__), '..', 'data', 'challenge_6.txt')
+      cipherbase64 = File.read(path)
+      cipherbytes = Bases.base64_to_bytes(cipherbase64)
+      english_judge = EnglishJudge.new
+      keysizes = (2..40)
+
+      distances = {}
+      keysizes.each do |keysize|
+        block1 = cipherbytes.slice(0, keysize)
+        block2 = cipherbytes.slice(keysize, keysize * 2)
+        s1 = Bases.bytes_to_ascii(block1)
+        s2 = Bases.bytes_to_ascii(block2)
+        distance = english_judge.hamming_distance(s1, s2)
+        distances[keysize] = distance / keysize.to_f
+      end
+
+      puts distances
+
+      potential_keysizes = distances.sort_by { |k, v| v }.take(4)
+      potential_keysizes.each do |keysize|
+        blocks = Util.partition(cipherbytes, keysize)
+      end
+    end
   end
 end
