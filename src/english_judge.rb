@@ -1,5 +1,3 @@
-require 'pry'
-
 class EnglishJudge
   def initialize
     @frequencies = {}
