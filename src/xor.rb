@@ -65,7 +65,7 @@ module Xor
 
     def break_repeating_key_xor
       path = File.join(File.dirname(__FILE__), '..', 'data', 'challenge_6.txt')
-      cipherbase64 = File.read(path)
+      cipherbase64 = File.read(path).gsub(/\n/, '')
       cipherbytes = Bases.base64_to_bytes(cipherbase64)
       english_judge = EnglishJudge.new
       keysizes = (2..40)
@@ -73,16 +73,15 @@ module Xor
       distances = {}
       keysizes.each do |keysize|
         block1 = cipherbytes.slice(0, keysize)
-        block2 = cipherbytes.slice(keysize, keysize * 2)
+        block2 = cipherbytes.slice(keysize, keysize)
         s1 = Bases.bytes_to_ascii(block1)
         s2 = Bases.bytes_to_ascii(block2)
         distance = english_judge.hamming_distance(s1, s2)
         distances[keysize] = distance / keysize.to_f
       end
 
-      puts distances
-
-      potential_keysizes = distances.sort_by { |k, v| v }.take(4).map(&:first)
+      potential_keysizes = distances.sort_by { |k, v| v }.take(5).map(&:first)
+      puts potential_keysizes
       potential_plaintexts = []
       potential_keysizes.each do |keysize|
         blocks = Util.partition(cipherbytes, keysize)
@@ -101,12 +100,20 @@ module Xor
           key_bytes << key
         end
 
-        puts cipherbytes
-        puts key_bytes
         potential_plaintexts << Bases.bytes_to_ascii(self.repeating_key_xor(cipherbytes, key_bytes))
       end
 
-      puts potential_plaintexts
+      winning_plaintext = nil
+      highest_score = 0
+      potential_plaintexts.each do |plaintext|
+        score = english_judge.score_plaintext(plaintext)
+        if score > highest_score
+          winning_plaintext = plaintext
+          highest_score = score
+        end
+      end
+
+      puts winning_plaintext
     end
   end
 end
