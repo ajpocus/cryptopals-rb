@@ -24,4 +24,10 @@ RSpec.describe AES do
     ciphertext = Bases.base64_to_ascii(cipherbase64)
     puts AES.decrypt_cbc(ciphertext, 'YELLOW SUBMARINE')
   end
+
+  it 'generates a random AES key' do
+    key = AES.random_key
+    expect(key).to be_an_instance_of(String)
+    expect(key.length).to eq(16)
+  end
 end

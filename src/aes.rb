@@ -6,7 +6,7 @@ module AES
   class << self
     BLOCK_SIZE = 16
 
-    def ecb(text, key, mode)
+    def ecb(text, key, mode, include_padding=true)
       self.check_mode!(mode)
 
       cipher = OpenSSL::Cipher.new 'AES-128-ECB'
@@ -17,8 +17,10 @@ module AES
         cipher.decrypt
       end
       cipher.key = key
-      cipher.padding = 0
-
+      if !include_padding
+        cipher.padding = 0
+      end
+      
       result = cipher.update(text)
       result << cipher.final
 
@@ -43,10 +45,10 @@ module AES
         case mode
         when 'encrypt'
           xored_ascii = self.xor_block(block, last_block)
-          processed_block = self.ecb(xored_ascii, key, mode)
+          processed_block = self.ecb(xored_ascii, key, mode, false)
           last_block = processed_block
         when 'decrypt'
-          ecb_block = self.ecb(block, key, mode)
+          ecb_block = self.ecb(block, key, mode, false)
           processed_block = self.xor_block(ecb_block, last_block)
           last_block = block
         end
