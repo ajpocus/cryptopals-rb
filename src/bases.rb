@@ -5,7 +5,7 @@ module Bases
     def ascii_to_bytes(ascii)
       ascii.bytes
     end
-    
+
     def base64_to_ascii(base64)
       Base64.decode64(base64)
     end
@@ -28,6 +28,10 @@ module Bases
 
     def bytes_to_hex(bytes)
       bytes.map { |b| b.to_s(16) }.join('')
+    end
+
+    def hex_to_ascii(hex)
+      self.bytes_to_ascii(self.hex_to_bytes(hex))
     end
 
     def hex_to_base64(hex)
