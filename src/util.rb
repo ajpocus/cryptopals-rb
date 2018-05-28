@@ -1,3 +1,5 @@
+require_relative './bases'
+
 module Util
   class << self
     def partition(arr, len, pad_end=true)
@@ -29,6 +31,10 @@ module Util
       len.times.map do
         rand(256)
       end
+    end
+
+    def random_string(len)
+      Bases.bytes_to_ascii(random_bytes(len))
     end
   end
 end

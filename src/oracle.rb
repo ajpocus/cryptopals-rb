@@ -1,5 +1,6 @@
 require_relative './aes'
 require_relative './util'
+require_relative './constants'
 
 module Oracle
   class << self
@@ -10,17 +11,15 @@ module Oracle
 
     def encrypt_cbc_random(plaintext)
       plaintext = pad_random(plaintext)
+      random_iv = Util.random_string(BLOCK_SIZE)
       AES.cbc_encrypt(plaintext, AES.random_key)
     end
 
     def pad_random(plaintext)
       num_bytes = rand(5, 11)
-      random_bytes1 = Util.random_bytes(num_bytes)
-      random_bytes2 = Util.random_bytes(num_bytes)
-      random_text1 = Bases.bytes_to_ascii(random_bytes1)
-      random_text2 = Bases.bytes_to_ascii(random_bytes2)
-      
-      random_text1 + plaintext + random_text2
+      random_string1 = Util.random_string(num_bytes)
+      random_string2 = Util.random_string(num_bytes)
+      random_string1 + plaintext + random_string2
     end
 
     def encrypt_random(plaintext)

@@ -1,11 +1,10 @@
 require 'openssl'
 require_relative './bases'
 require_relative './util'
+require_relative './constants'
 
 module AES
   class << self
-    BLOCK_SIZE = 16
-
     def ecb(text, key, mode, include_padding=true)
       self.check_mode!(mode)
 
@@ -35,9 +34,9 @@ module AES
       ecb(plaintext, key, 'encrypt')
     end
 
-    def cbc(text, key, mode)
+    def cbc(text, key, mode, iv=nil)
       check_mode!(mode)
-      iv = "\x00" * BLOCK_SIZE
+      iv ||= "\x00" * BLOCK_SIZE
       last_block = iv
 
       given_blocks = Util.partition(text, BLOCK_SIZE)
@@ -59,12 +58,12 @@ module AES
       processed_blocks.join('')
     end
 
-    def encrypt_cbc(plaintext, key)
-      self.cbc(plaintext, key, 'encrypt')
+    def encrypt_cbc(plaintext, key, iv=nil)
+      self.cbc(plaintext, key, 'encrypt', iv)
     end
 
-    def decrypt_cbc(ciphertext, key)
-      self.cbc(ciphertext, key, 'decrypt')
+    def decrypt_cbc(ciphertext, key, iv=nil)
+      self.cbc(ciphertext, key, 'decrypt', iv)
     end
 
     def random_key
