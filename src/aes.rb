@@ -7,13 +7,7 @@ module AES
     BLOCK_SIZE = 16
 
     def ecb(text, key, mode)
-      if !mode
-        raise 'Mode must be explicitly passed in'
-      end
-
-      if !['encrypt', 'decrypt'].include?(mode)
-        raise 'Invalid mode, must be one of "encrypt", "decrypt"'
-      end
+      self.check_mode!(mode)
 
       cipher = OpenSSL::Cipher.new 'AES-128-ECB'
       case mode
@@ -38,44 +32,53 @@ module AES
       ecb(plaintext, key, 'encrypt')
     end
 
-    def encrypt_cbc(plaintext, key)
+    def cbc(text, key, mode)
+      check_mode!(mode)
       iv = "\x00" * BLOCK_SIZE
       last_block = iv
 
-      plain_blocks = Util.partition(plaintext, BLOCK_SIZE)
-      encrypted_blocks = plain_blocks.map do |block|
-        block_bytes = Bases.ascii_to_bytes(block)
-        last_block_bytes = Bases.ascii_to_bytes(last_block)
-        byte_pairs = block_bytes.zip(last_block_bytes)
-        xored_bytes = byte_pairs.map { |a, b| a ^ b }
-        xored_ascii = Bases.bytes_to_ascii(xored_bytes)
+      given_blocks = Util.partition(Bases.ascii_to_bytes(text), BLOCK_SIZE)
+      processed_blocks = given_blocks.map do |block|
+        case mode
+        when 'encrypt'
+          xored_ascii = self.xor_block(block, last_block)
+          processed_block = self.ecb(xored_ascii, key, mode)
+        when 'decrypt'
+          ecb_block = self.ecb(block, key, mode)
+          processed_block = self.xor_block(ecb_block, last_block)
+        end
 
-        encrypted_block = self.encrypt_ecb(xored_ascii, key)
-        last_block = encrypted_block
-        encrypted_block
+        last_block = processed_block
+        processed_block
       end
 
-      Bases.ascii_to_bytes(encrypted_blocks.join(''))
+      Bases.ascii_to_bytes(processed_blocks.join(''))
+    end
+
+    def encrypt_cbc(plaintext, key)
+      self.cbc(plaintext, key, 'encrypt')
     end
 
     def decrypt_cbc(ciphertext, key)
-      iv = "\x00" * BLOCK_SIZE
-      last_block = iv
+      self.cbc(ciphertext, key, 'decrypt')
+    end
 
-      cipher_blocks = Util.partition(ciphertext, BLOCK_SIZE, false)
-      decrypted_blocks = cipher_blocks.map do |block|
-        block_bytes = Bases.ascii_to_bytes(block)
-        last_block_bytes = Bases.ascii_to_bytes(last_block)
-        byte_pairs = block_bytes.zip(last_block_bytes)
-        xored_bytes = byte_pairs.map { |a, b| a ^ b }
-        xored_ascii = Bases.bytes_to_ascii(xored_bytes)
-
-        decrypted_block = self.decrypt_ecb(xored_ascii, key)
-        last_block = decrypted_block
-        decrypted_block
+    def check_mode!(mode)
+      if !mode
+        raise 'Mode must be explicitly passed in'
       end
 
-      Bases.ascii_to_bytes(decrypted_blocks.join(''))
+      if !['encrypt', 'decrypt'].include?(mode)
+        raise 'Invalid mode, must be one of "encrypt", "decrypt"'
+      end
+    end
+
+    def xor_block(block, last_block)
+      block_bytes = Bases.ascii_to_bytes(block)
+      last_block_bytes = Bases.ascii_to_bytes(last_block)
+      byte_pairs = block_bytes.zip(last_block_bytes)
+      xored_bytes = byte_pairs.map { |a, b| a ^ b }
+      Bases.bytes_to_ascii(xored_bytes)
     end
   end
 end
