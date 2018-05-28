@@ -17,6 +17,9 @@ module Oracle
       num_bytes = rand(5, 11)
       random_bytes1 = Util.random_bytes(num_bytes)
       random_bytes2 = Util.random_bytes(num_bytes)
+      random_text1 = Bases.bytes_to_ascii(random_bytes1)
+      random_text2 = Bases.bytes_to_ascii(random_bytes2)
+      
       random_text1 + plaintext + random_text2
     end
 
