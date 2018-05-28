@@ -24,5 +24,11 @@ module Util
       str << ("\\x%02d" % pad_len) * pad_len
       str
     end
+
+    def random_bytes(len)
+      len.times.map do
+        rand(256)
+      end
+    end
   end
 end

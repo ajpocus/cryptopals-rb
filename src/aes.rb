@@ -68,10 +68,7 @@ module AES
     end
 
     def random_key
-      random_bytes = BLOCK_SIZE.times.map do
-        rand(256)
-      end
-
+      random_bytes = Util.random_bytes(BLOCK_SIZE)
       Bases.bytes_to_ascii(random_bytes)
     end
 
