@@ -20,7 +20,7 @@ module AES
       if !include_padding
         cipher.padding = 0
       end
-      
+
       result = cipher.update(text)
       result << cipher.final
 
@@ -65,6 +65,14 @@ module AES
 
     def decrypt_cbc(ciphertext, key)
       self.cbc(ciphertext, key, 'decrypt')
+    end
+
+    def random_key
+      random_bytes = BLOCK_SIZE.times.map do
+        rand(256)
+      end
+
+      Bases.bytes_to_ascii(random_bytes)
     end
 
     def check_mode!(mode)
