@@ -1,4 +1,5 @@
 require 'openssl'
+require 'pp'
 require_relative './bases'
 require_relative './util'
 
@@ -17,6 +18,7 @@ module AES
         cipher.decrypt
       end
       cipher.key = key
+      cipher.padding = 0
 
       result = cipher.update(text)
       result << cipher.final
@@ -37,22 +39,23 @@ module AES
       iv = "\x00" * BLOCK_SIZE
       last_block = iv
 
-      given_blocks = Util.partition(Bases.ascii_to_bytes(text), BLOCK_SIZE)
+      given_blocks = Util.partition(text, BLOCK_SIZE)
       processed_blocks = given_blocks.map do |block|
         case mode
         when 'encrypt'
           xored_ascii = self.xor_block(block, last_block)
           processed_block = self.ecb(xored_ascii, key, mode)
+          last_block = processed_block
         when 'decrypt'
           ecb_block = self.ecb(block, key, mode)
           processed_block = self.xor_block(ecb_block, last_block)
+          last_block = block
         end
 
-        last_block = processed_block
         processed_block
       end
 
-      Bases.ascii_to_bytes(processed_blocks.join(''))
+      processed_blocks.join('')
     end
 
     def encrypt_cbc(plaintext, key)
