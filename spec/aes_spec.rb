@@ -10,10 +10,6 @@ RSpec.describe AES do
     puts plaintext
   end
 
-  it 'detects ECB mode' do
-    pp AES.detect_ecb
-  end
-
   it 'encrypts and decrypts in ECB mode' do
     plaintext = 'Pocus was here'
     key = "SECRETTOEVERYONE"

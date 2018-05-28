@@ -13,17 +13,6 @@ RSpec.describe Xor do
     expect(Xor.fixed_xor(b1, b2)).to eq(Bases.hex_to_bytes(hex_result))
   end
 
-  it 'breaks single-byte xor' do
-    cipherhex = '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
-    cipherbytes = Bases.hex_to_bytes(cipherhex)
-    plaintext, key = Xor.break_single_byte_xor(cipherbytes)
-    puts plaintext
-  end
-
-  it 'detects single-byte xor' do
-    puts Xor.detect_single_byte_xor
-  end
-
   it 'performs repeating-key xor' do
     sample_plaintext = """Burning 'em, if you ain't quick and nimble
 I go crazy when I hear a cymbal"""
@@ -34,9 +23,5 @@ I go crazy when I hear a cymbal"""
     keybytes = Bases.ascii_to_bytes(key)
 
     expect(Xor.repeating_key_xor(plainbytes, keybytes)).to eq(cipherbytes)
-  end
-
-  it 'breaks repeating-key xor' do
-    puts Xor.break_repeating_key_xor
   end
 end
