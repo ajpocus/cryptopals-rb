@@ -1,5 +1,9 @@
 require_relative './xor'
 require_relative './bases'
+require_relative './aes'
+require_relative './oracle'
+require_relative './constants'
+require 'pp'
 
 module Breaker
   class << self
@@ -99,7 +103,7 @@ module Breaker
 
       lines.each do |cipherhex|
         cipherbytes = Bases.hex_to_bytes(cipherhex)
-        blocks = Util.partition(cipherbytes, 16, false)
+        blocks = Util.partition(cipherbytes, Constants::BLOCK_SIZE, false)
 
         char_counts = {}
         blocks.each do |block|
@@ -122,6 +126,19 @@ module Breaker
       end
 
       winning_blocks
+    end
+
+    def detect_mode
+      plaintext = Constants::BASE_TEXT * 16
+      ciphertext = Oracle.encrypt_random(plaintext)
+      cipherbytes = Bases.ascii_to_bytes(ciphertext)
+      blocks = Util.partition(cipherbytes, 16, false)
+
+      if Util.has_duplicate_blocks?(blocks)
+        'ECB'
+      else
+        'CBC'
+      end
     end
   end
 end

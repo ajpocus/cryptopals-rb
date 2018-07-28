@@ -1,7 +1,8 @@
+require_relative './spec_helper'
 require_relative '../src/bases'
 require_relative '../src/xor'
 
-RSpec.describe Xor do
+describe Xor do
   it 'performs a fixed xor on two byte arrays of equal length' do
     hex1 = '1c0111001f010100061a024b53535009181c'
     hex2 = '686974207468652062756c6c277320657965'

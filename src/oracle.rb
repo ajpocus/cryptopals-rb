@@ -5,21 +5,20 @@ require_relative './constants'
 module Oracle
   class << self
     def encrypt_ecb_random(plaintext)
-      plaintext = pad_random(plaintext)
-      AES.ecb_encrypt(plaintext, AES.random_key)
+      plaintext = pad_with_string(plaintext)
+      AES.encrypt_ecb(plaintext, AES.random_key)
     end
 
     def encrypt_cbc_random(plaintext)
-      plaintext = pad_random(plaintext)
-      random_iv = Util.random_string(BLOCK_SIZE)
-      AES.cbc_encrypt(plaintext, AES.random_key)
+      plaintext = pad_with_string(plaintext)
+      random_iv = Util.random_string(Constants::BLOCK_SIZE)
+      AES.encrypt_cbc(plaintext, AES.random_key, random_iv)
     end
 
-    def pad_random(plaintext)
-      num_bytes = rand(5, 11)
-      random_string1 = Util.random_string(num_bytes)
-      random_string2 = Util.random_string(num_bytes)
-      random_string1 + plaintext + random_string2
+    def pad_with_string(plaintext)
+      num_bytes = rand(6) + 5
+      string = Constants::BASE_TEXT.slice(0, num_bytes)
+      string + plaintext + string
     end
 
     def encrypt_random(plaintext)

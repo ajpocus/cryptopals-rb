@@ -1,4 +1,5 @@
 require_relative './bases'
+require 'set'
 
 module Util
   class << self
@@ -35,6 +36,11 @@ module Util
 
     def random_string(len)
       Bases.bytes_to_ascii(random_bytes(len))
+    end
+
+    def has_duplicate_blocks?(blocks)
+      blockset = Set.new(blocks)
+      blockset.length != blocks.length
     end
   end
 end

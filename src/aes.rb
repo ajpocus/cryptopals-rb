@@ -36,10 +36,10 @@ module AES
 
     def cbc(text, key, mode, iv=nil)
       check_mode!(mode)
-      iv ||= "\x00" * BLOCK_SIZE
+      iv ||= "\x00" * Constants::BLOCK_SIZE
       last_block = iv
 
-      given_blocks = Util.partition(text, BLOCK_SIZE)
+      given_blocks = Util.partition(text, Constants::BLOCK_SIZE)
       processed_blocks = given_blocks.map do |block|
         case mode
         when 'encrypt'
@@ -67,7 +67,7 @@ module AES
     end
 
     def random_key
-      random_bytes = Util.random_bytes(BLOCK_SIZE)
+      random_bytes = Util.random_bytes(Constants::BLOCK_SIZE)
       Bases.bytes_to_ascii(random_bytes)
     end
 

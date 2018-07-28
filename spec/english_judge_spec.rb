@@ -1,7 +1,8 @@
+require_relative './spec_helper'
 require_relative '../src/english_judge'
 require_relative '../src/bases'
 
-RSpec.describe EnglishJudge do
+describe EnglishJudge do
   before do
     @english_judge = EnglishJudge.new
   end
