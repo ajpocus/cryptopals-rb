@@ -2,6 +2,8 @@ require_relative './aes'
 require_relative './util'
 require_relative './constants'
 
+RANDOM_KEY = AES.random_key
+
 module Oracle
   class << self
     def encrypt_ecb_random(plaintext)
@@ -28,6 +30,15 @@ module Oracle
       else
         encrypt_cbc_random(plaintext)
       end
+    end
+
+    def encrypt_unknown(plaintext)
+      path = File.join(File.dirname(__FILE__), '..', 'data', 'challenge_12.txt')
+      unknown_base64 = File.read(path)
+      unknown_text = Bases.base64_to_ascii(unknown_base64)
+      plaintext += unknown_text
+
+      AES.encrypt_ecb(plaintext, RANDOM_KEY)
     end
   end
 end

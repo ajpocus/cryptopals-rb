@@ -140,5 +140,29 @@ module Breaker
         'CBC'
       end
     end
+
+    def break_unknown
+      # detect block size
+      block_size = nil
+      last_block_seen = nil
+
+      32.times.each do |i|
+        plaintext = 'A' * i
+        ciphertext = Oracle.encrypt_unknown(plaintext)
+        cipherbytes = Bases.ascii_to_bytes(ciphertext)
+
+        cipherblocks = Util.partition(cipherbytes, 16, false)
+        first_block = cipherblocks.first
+
+        if first_block == last_block_seen
+          block_size = i - 1
+          break
+        else
+          last_block_seen = first_block
+        end
+      end
+
+      puts block_size
+    end
   end
 end
