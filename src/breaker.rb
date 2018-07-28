@@ -152,7 +152,7 @@ module Breaker
         cipherbytes = Bases.ascii_to_bytes(ciphertext)
 
         cipherblocks = Util.partition(cipherbytes, 16, false)
-        first_block = cipherblocks.first
+        first_block = cipherblocks[0]
 
         if first_block == last_block_seen
           block_size = i - 1
@@ -160,6 +160,21 @@ module Breaker
         else
           last_block_seen = first_block
         end
+      end
+
+      puts block_size
+
+      plaintext = 'A' * (block_size * 2)
+      ciphertext = Oracle.encrypt_unknown(plaintext)
+      cipherbytes = Bases.ascii_to_bytes(ciphertext)
+
+      cipherblocks = Util.partition(cipherbytes, 16, false)
+      first_block = cipherblocks[0]
+      second_block = cipherblocks[1]
+      is_ecb = first_block == second_block
+
+      if !is_ecb
+        raise Exception.new('This is not ECB. Something is terribly wrong.')
       end
 
       puts block_size
