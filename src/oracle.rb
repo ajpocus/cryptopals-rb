@@ -17,7 +17,7 @@ module Oracle
 
     def pad_with_string(plaintext)
       num_bytes = rand(6) + 5
-      string = Constants::BASE_TEXT.slice(0, num_bytes)
+      string = Constants::PADDING_TEXT.slice(0, num_bytes)
       string + plaintext + string
     end
 
