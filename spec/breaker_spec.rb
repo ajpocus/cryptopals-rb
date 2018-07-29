@@ -36,4 +36,8 @@ describe Breaker do
     expect(ecb_ratio).to be_within(0.1).of(0.5)
     expect(cbc_ratio).to be_within(0.1).of(0.5)
   end
+
+  it "decrypts unknown text" do
+    puts Breaker.break_unknown
+  end
 end
