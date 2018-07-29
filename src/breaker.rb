@@ -142,9 +142,7 @@ module Breaker
       end
     end
 
-    def break_unknown
-      # detect block size
-      block_size = nil
+    def find_unknown_block_size
       last_block_seen = nil
 
       32.times.each do |i|
@@ -163,6 +161,10 @@ module Breaker
         end
       end
 
+      block_size
+    end
+
+    def detect_unknown_ecb!
       plaintext = 'A' * (block_size * 2)
       ciphertext = Oracle.encrypt_unknown(plaintext)
       cipherbytes = Bases.ascii_to_bytes(ciphertext)
@@ -176,15 +178,25 @@ module Breaker
         raise Exception.new('This is not ECB. Something is terribly wrong.')
       end
 
+      is_ecb
+    end
+
+    def break_unknown
+      block_size = find_unknown_block_size
+      detect_unknown_ecb!
+
       ciphertext = Oracle.encrypt_unknown('')
       cipherbytes = Bases.ascii_to_bytes(ciphertext)
 
       unknown_plainbytes = (1...cipherbytes.length).map do |i|
-        index = i - 1
-        short_plaintext = 'A' * ((block_size * i) - 1)
+        multiple = ((block_size * i) - i)
+        block_index = block_size - ((multiple + block_size) % block_size) - 1
+        puts block_index
+
+        short_plaintext = 'A' * multiple
         ciphertext = Oracle.encrypt_unknown(short_plaintext)
         cipherbytes = Bases.ascii_to_bytes(ciphertext)
-        short_block = Util.partition(cipherbytes, 16, false)[index]
+        short_block = Util.partition(cipherbytes, 16, false)[block_index]
 
         blocks = {}
         test_blocks = 256.times.each do |byte|
@@ -194,13 +206,14 @@ module Breaker
 
           ciphertext = Oracle.encrypt_unknown(plaintext)
           cipherbytes = Bases.ascii_to_bytes(ciphertext)
-          block = Util.partition(cipherbytes, 16, false)[index]
+          block = Util.partition(cipherbytes, 16, false)[block_index]
           blocks[byte] = block
         end
 
-        winning_block = blocks.find { |k, v| v == short_block }
-        unknown_byte = winning_block[0]
-        puts unknown_byte
+        binding.pry
+        
+        matching_pair = blocks.find { |byte, block| block == short_block }
+        unknown_byte = matching_pair[0]
 
         unknown_byte
       end
