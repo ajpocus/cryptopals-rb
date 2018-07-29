@@ -163,8 +163,6 @@ module Breaker
         end
       end
 
-      puts block_size
-
       plaintext = 'A' * (block_size * 2)
       ciphertext = Oracle.encrypt_unknown(plaintext)
       cipherbytes = Bases.ascii_to_bytes(ciphertext)
@@ -178,11 +176,15 @@ module Breaker
         raise Exception.new('This is not ECB. Something is terribly wrong.')
       end
 
+      ciphertext = Oracle.encrypt_unknown('')
+      cipherbytes = Bases.ascii_to_bytes(ciphertext)
+
       unknown_plainbytes = (1...cipherbytes.length).map do |i|
-        short_plaintext = 'A' * (block_size * i - 1)
+        index = i - 1
+        short_plaintext = 'A' * ((block_size * i) - 1)
         ciphertext = Oracle.encrypt_unknown(short_plaintext)
         cipherbytes = Bases.ascii_to_bytes(ciphertext)
-        short_block = Util.partition(cipherbytes, 16, false)[i - 1]
+        short_block = Util.partition(cipherbytes, 16, false)[index]
 
         blocks = {}
         test_blocks = 256.times.each do |byte|
@@ -192,19 +194,18 @@ module Breaker
 
           ciphertext = Oracle.encrypt_unknown(plaintext)
           cipherbytes = Bases.ascii_to_bytes(ciphertext)
-          block = Util.partition(cipherbytes, 16, false)[i - 1]
+          block = Util.partition(cipherbytes, 16, false)[index]
           blocks[byte] = block
         end
 
-        pp blocks
-        binding.pry
         winning_block = blocks.find { |k, v| v == short_block }
-        puts winning_block
         unknown_byte = winning_block[0]
+        puts unknown_byte
 
-        puts "FIRST: " + unknown_byte.to_s
-        return unknown_byte
+        unknown_byte
       end
+
+      binding.pry
 
       Bases.bytes_to_ascii(unknown_plainbytes)
     end
