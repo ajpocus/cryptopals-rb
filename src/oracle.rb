@@ -36,7 +36,6 @@ module Oracle
       path = File.join(File.dirname(__FILE__), '..', 'data', 'challenge_12.txt')
       unknown_base64 = File.read(path)
       unknown_text = Bases.base64_to_ascii(unknown_base64)
-      puts "UNOWN: " + unknown_text[0]
       plaintext += unknown_text
 
       AES.encrypt_ecb(plaintext, RANDOM_KEY)

@@ -4,6 +4,7 @@ require_relative './aes'
 require_relative './oracle'
 require_relative './constants'
 require 'pp'
+require 'pry'
 
 module Breaker
   class << self
@@ -177,30 +178,35 @@ module Breaker
         raise Exception.new('This is not ECB. Something is terribly wrong.')
       end
 
-      unknown_cipherbytes = (1...cipherbytes.length).map do |i|
+      unknown_plainbytes = (1...cipherbytes.length).map do |i|
         short_plaintext = 'A' * (block_size * i - 1)
         ciphertext = Oracle.encrypt_unknown(short_plaintext)
         cipherbytes = Bases.ascii_to_bytes(ciphertext)
-        short_block = Util.partition(cipherbytes, 16, false)[i]
+        short_block = Util.partition(cipherbytes, 16, false)[i - 1]
 
-        test_blocks = 256.times.map do |i|
+        blocks = {}
+        test_blocks = 256.times.each do |byte|
           plainbytes = Bases.ascii_to_bytes(short_plaintext)
-          plainbytes << i
+          plainbytes << byte
           plaintext = Bases.bytes_to_ascii(plainbytes)
+
           ciphertext = Oracle.encrypt_unknown(plaintext)
           cipherbytes = Bases.ascii_to_bytes(ciphertext)
-          Util.partition(cipherbytes, 16, false)[0]
+          block = Util.partition(cipherbytes, 16, false)[i - 1]
+          blocks[byte] = block
         end
 
-        winning_block = test_blocks.select { |b| b == short_block }[0]
-        unknown_byte = winning_block[-1]
+        pp blocks
+        binding.pry
+        winning_block = blocks.find { |k, v| v == short_block }
+        puts winning_block
+        unknown_byte = winning_block[0]
 
         puts "FIRST: " + unknown_byte.to_s
-        unknown_byte
+        return unknown_byte
       end
 
-      unknown_ciphertext = Bases.bytes_to_ascii(unknown_cipherbytes)
-      AES.decrypt_ecb(unknown_ciphertext, RANDOM_KEY)
+      Bases.bytes_to_ascii(unknown_plainbytes)
     end
   end
 end
