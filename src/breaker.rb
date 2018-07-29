@@ -177,7 +177,26 @@ module Breaker
         raise Exception.new('This is not ECB. Something is terribly wrong.')
       end
 
-      puts block_size
+      short_plaintext = 'A' * (block_size - 1)
+      ciphertext = Oracle.encrypt_unknown(short_plaintext)
+      cipherbytes = Bases.ascii_to_bytes(ciphertext)
+      short_block = Util.partition(cipherbytes, 16, false)[0]
+
+      test_blocks = 256.times.map do |i|
+        plainbytes = Bases.ascii_to_bytes(short_plaintext)
+        plainbytes << i
+        plaintext = Bases.bytes_to_ascii(plainbytes)
+        ciphertext = Oracle.encrypt_unknown(plaintext)
+        cipherbytes = Bases.ascii_to_bytes(ciphertext)
+        Util.partition(cipherbytes, 16, false)[0]
+      end
+
+      winning_block = test_blocks.select { |b| b == short_block }
+      pp winning_block
+      first_byte = winning_block.first.last
+
+      puts "FIRST: " + first_byte.to_s
+      first_byte
     end
   end
 end
